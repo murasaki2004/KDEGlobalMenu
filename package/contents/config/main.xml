@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""/>
+
+    <group name="General">
+        <!-- 折叠态显示的图标;留空则回落为 start-here-kde -->
+        <entry name="icon" type="String">
+            <label>Icon shown in the panel</label>
+            <default>start-here-kde</default>
+        </entry>
+        <!-- 最近使用项目子菜单中最多显示的条目数 -->
+        <entry name="recentItemsLimit" type="Int">
+            <label>Maximum number of entries in the Recent Items submenu</label>
+            <default>8</default>
+            <min>1</min>
+            <max>30</max>
+        </entry>
+    </group>
+</kcfg>

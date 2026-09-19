@@ -1,0 +1,118 @@
+# English translations for KDEGlobalMenu package.
+# Copyright (C) 2026 THE KDEGlobalMenu'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the KDEGlobalMenu package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: KDEGlobalMenu 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-19 12:17+0800\n"
+"PO-Revision-Date: 2026-09-19 10:39+0800\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: package/contents/ui/main.qml:51
+msgid "KDEGlobalMenu"
+msgstr "KDEGlobalMenu"
+
+#: package/contents/ui/MenuPopup.qml:81
+msgctxt "Open the KDE About System information page"
+msgid "About This Computer"
+msgstr "About This Computer"
+
+#: package/contents/ui/MenuPopup.qml:82
+msgctxt "Open the KDE system settings application"
+msgid "System Settings"
+msgstr "System Settings"
+
+#: package/contents/ui/MenuPopup.qml:83
+msgctxt "Submenu listing recently used applications"
+msgid "Recent Items"
+msgstr "Recent Items"
+
+#: package/contents/ui/MenuPopup.qml:84
+msgctxt "Power action: put the computer to sleep (suspend)"
+msgid "Sleep"
+msgstr "Sleep"
+
+#: package/contents/ui/MenuPopup.qml:85
+msgctxt "Power action: reboot the computer"
+msgid "Restart"
+msgstr "Restart"
+
+#: package/contents/ui/MenuPopup.qml:86
+msgctxt "Power action: power off the computer"
+msgid "Shut Down"
+msgstr "Shut Down"
+
+#: package/contents/ui/MenuPopup.qml:87
+msgctxt "Power action: lock the screen immediately"
+msgid "Lock Screen"
+msgstr "Lock Screen"
+
+#: package/contents/ui/MenuPopup.qml:88
+msgctxt "Power action: end the current session"
+msgid "Log Out"
+msgstr "Log Out"
+
+#: package/contents/ui/MenuPopup.qml:160
+msgctxt "Go back from the Recent Items submenu to the main menu"
+msgid "Back"
+msgstr "Back"
+
+#: package/contents/ui/MenuPopup.qml:205
+msgid "Recent items unavailable"
+msgstr "Recent items unavailable"
+
+#: package/contents/ui/MenuPopup.qml:208
+msgid "No recent applications"
+msgstr "No recent applications"
+
+#: package/contents/ui/MenuPopup.qml:209
+msgctxt "Placeholder while the recent items list is being read"
+msgid "Loading…"
+msgstr "Loading…"
+
+#: package/contents/ui/config_general.qml:97
+msgid "Current icon:"
+msgstr "Current icon:"
+
+#: package/contents/ui/config_general.qml:127
+msgid "Icon chooser not found — run install.sh to build it"
+msgstr "Icon chooser not found — run install.sh to build it"
+
+#: package/contents/ui/config_general.qml:139
+msgid "Choose icon:"
+msgstr "Choose icon:"
+
+#: package/contents/ui/config_general.qml:141
+msgid "Browse Icons…"
+msgstr "Browse Icons…"
+
+#: package/contents/ui/config_general.qml:149
+msgid "Opens KDE's own icon picker dialog as used by Kate and Dolphin."
+msgstr "Opens KDE's own icon picker dialog as used by Kate and Dolphin."
+
+#: package/contents/ui/config_general.qml:158
+msgctxt "Reset the icon back to its default value"
+msgid "Reset"
+msgstr "Reset"
+
+#: package/contents/ui/config_general.qml:166
+msgid "Or enter an icon name:"
+msgstr "Or enter an icon name:"
+
+#: package/contents/ui/config_general.qml:176
+msgid "Recent items shown:"
+msgstr "Recent items shown:"
+
+#: package/contents/config/config.qml:12
+msgctxt "Name of the configuration category"
+msgid "Appearance"
+msgstr "Appearance"

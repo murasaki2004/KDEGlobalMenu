@@ -1,0 +1,8 @@
+# 构建产物与临时文件
+tools/iconchooser/build/
+package/contents/bin/
+__pycache__/
+*.pyc
+.shot/
+.verify/
+.probe/

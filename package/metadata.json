@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "murasaki"
+            }
+        ],
+        "Category": "Application Launchers",
+        "Description": "A single panel icon that opens a macOS-style system menu",
+        "Description[zh_CN]": "面板上的 macOS 风格系统菜单：单个图标，点击展开",
+        "EnabledByDefault": true,
+        "Icon": "start-here-kde",
+        "Id": "org.murasaki.kdeglobalmenu",
+        "License": "MPL-2.0",
+        "Name": "KDEGlobalMenu",
+        "Name[zh_CN]": "KDEGlobalMenu",
+        "Version": "1.0.0",
+        "Website": "https://invent.kde.org/"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
