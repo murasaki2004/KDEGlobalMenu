@@ -24,7 +24,7 @@ macOS 风格的竖向菜单。图标可在部件设置里替换。
 |---|---|---|
 | 关于本机 | `kcmshell6 kcm_about-distro` | KDE 原生「关于此系统」页面 |
 | 系统设置 | `systemsettings` | 系统设置主程序 |
-| 最近使用的项目 | KActivities 使用数据库 + desktop 文件 | 子菜单，列出最近启动的程序（真实图标 + 本地化名称），与 KDE「最近使用」同源 |
+| 最近使用的项目 | KActivities 使用数据库 + desktop 文件 | 子菜单，列出最近启动的程序（真实图标 + 按系统语言本地化的名称），与 KDE「最近使用」同源；点击用 `gio launch` 启动程序，失败回落 `gtk-launch` |
 | 睡眠 | `SessionManagement.suspend()` | Plasma 会话管理；回落 logind `Manager.Suspend` |
 | 重新启动 | `SessionManagement.requestReboot()` | 遵循系统设置里的「是否需要确认」策略 |
 | 关机 | `SessionManagement.requestShutdown()` | 同上 |
@@ -80,6 +80,7 @@ tests/
 - Plasma 6 / KF6（开发与验证环境为 Plasma 6.7.5）
 - `plasma-workspace`：提供 `org.kde.plasma.private.sessions`、`org.kde.plasma.plasma5support`
 - `python3`：读取「最近使用的程序」（仅用标准库）
+- `glib2`：提供 `gio`（启动最近使用的程序，回落 `gtk-launch`）
 - 可选：`kcmutils`（提供「关于此系统」KCM）、`systemsettings`
 - 可选：`cmake` + `kiconthemes`（含开发头文件）+ `ninja` —— 编译图标选择器；
   缺失时安装仍然成功，只是配置页的图形化图标选择不可用

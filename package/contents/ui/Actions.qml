@@ -54,6 +54,22 @@ QtObject {
             var stdout = (data["stdout"] || "").trim();
             var stderr = (data["stderr"] || "").trim();
 
+            // 启动类命令只看退出码：启动成功时 stdout 本来就是空的
+            if (sourceName.indexOf("gio launch ") === 0) {
+                if (parseInt(data["exit code"] || 0) !== 0) {
+                    console.warn("KDEGlobalMenu: gio 启动失败，改用 gtk-launch。id="
+                                 + actions.pendingLaunchId + " stderr=" + stderr);
+                    actions.launchByAppId(actions.pendingLaunchId);
+                }
+                return;
+            }
+            if (sourceName.indexOf("gtk-launch ") === 0) {
+                if (parseInt(data["exit code"] || 0) !== 0) {
+                    console.warn("KDEGlobalMenu: gtk-launch 启动失败。stderr=" + stderr);
+                }
+                return;
+            }
+
             // sourceName 是实际执行的命令串（含脚本绝对路径），因此只做包含判断
             var isRecent = sourceName.indexOf(" recent ") !== -1;
             if (!stdout) {
@@ -111,12 +127,43 @@ QtObject {
     }
 
     // ------------------------------------------------------------ 最近使用的项目
-    function openRecent(url) {
-        if (!url) {
+    // desktop 文件不是可执行程序：把它当文件交给系统"打开"，只会弹出 KIO 的
+    // 「选择用于打开 xxx 的应用程序」。所以这里显式启动应用。
+    // 用 GLib 的 gio（接受 desktop 文件路径，DBusActivatable / Terminal /
+    // 文件名里的空格都由它处理），失败时退回按 desktop 文件 id 启动的 gtk-launch。
+    property string pendingLaunchId: ""
+
+    function openRecent(url, id) {
+        var path = fileUrlToPath(url);
+        if (path === "") {
+            // 没找到 desktop 文件（比如程序已卸载）时只能按 id 试一把
+            launchByAppId(id);
             return;
         }
-        // 交由系统默认方式启动（KDE 原生关联）
-        Qt.openUrlExternally(url);
+        pendingLaunchId = id || "";
+        run('gio launch "' + path + '"');
+    }
+
+    // 按 desktop 文件 id 启动（gtk-launch 要的是去掉 .desktop 的 id）
+    function launchByAppId(id) {
+        if (!id) {
+            return;
+        }
+        run('gtk-launch "' + id.replace(/\.desktop$/, "") + '"');
+    }
+
+    // "file:///usr/share/applications/Clash%20Verge.desktop" -> 本地路径
+    function fileUrlToPath(url) {
+        if (!url || url.indexOf("file://") !== 0) {
+            return "";
+        }
+        var raw = url.substring("file://".length);
+        try {
+            return decodeURIComponent(raw);
+        } catch (e) {
+            // 数据源没按 URI 转义时（裸 % 会导致解码失败）按原样使用
+            return raw;
+        }
     }
 
     // -------------------------------------------------------------------- 睡眠

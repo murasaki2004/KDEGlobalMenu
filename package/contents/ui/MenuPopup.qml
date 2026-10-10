@@ -226,9 +226,10 @@ Item {
                         text: recentRow.modelData.name
                         iconName: recentRow.modelData.icon
                         actionEnabled: recentRow.modelData.url !== ""
+                                       || recentRow.modelData.id !== ""
                         highlighted: root.hoveredKey === ("recent:" + recentRow.index)
                         onActivated: {
-                            actions.openRecent(recentRow.modelData.url);
+                            actions.openRecent(recentRow.modelData.url, recentRow.modelData.id);
                             root.requestClose();
                         }
                         onHighlightedChanged: {

@@ -19,6 +19,7 @@ import json
 import os
 import sqlite3
 import sys
+from urllib.parse import quote
 
 
 def desktop_dirs():
@@ -32,10 +33,31 @@ def desktop_dirs():
     return result
 
 
+def locale_name_keys():
+    """当前语言的 Name 本地化键，从具体到宽泛。
+
+    "zh_CN.UTF-8@variant" -> ["Name[zh_CN]", "Name[zh]"]；
+    LANGUAGE 可能是 "zh_CN:en" 这样的优先级列表，只取第一个。
+    """
+    raw = ""
+    for name in ("LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"):
+        value = os.environ.get(name, "")
+        if not value or value in ("C", "POSIX"):
+            continue
+        raw = value.split(":")[0].split(".")[0].split("@")[0]
+        if raw:
+            break
+    if not raw:
+        return []
+    raw = raw.replace("-", "_")
+    language = raw.split("_")[0]
+    return ["Name[%s]" % raw] if language == raw else ["Name[%s]" % raw, "Name[%s]" % language]
+
+
 def desktop_entry(app_id):
     """按 desktop 文件 id 查找文件，返回 (路径, Name, Icon)。
 
-    支持 Name[zh_CN] 之类的本地化名字；路径用于后续给 QML 打开。
+    支持 Name[zh_CN] 之类的本地化名字；路径用于后续给 QML 启动应用。
     """
     if not app_id:
         return None, None, None
@@ -50,7 +72,7 @@ def desktop_entry(app_id):
             cp.read(path, encoding="utf-8")
             if not cp.has_section("Desktop Entry"):
                 continue
-            for key in ("Name[zh_CN]", "Name[zh_TW]", "Name"):
+            for key in locale_name_keys() + ["Name"]:
                 if cp.has_option("Desktop Entry", key):
                     name = cp.get("Desktop Entry", key).strip()
                     break
@@ -105,9 +127,9 @@ def cmd_recent(argv):
             "id": app_id,
             "name": name,
             "icon": icon,
-            # 有 desktop 文件就交给 QML 用 Qt.openUrlExternally 打开，
-            # 走系统默认启动方式（KDE 原生）
-            "url": "file://" + path if path else "",
+            # desktop 文件的 URI（按 URI 规则转义，文件名里的空格/中文才合法）。
+            # QML 侧解码出路径后交给 gio/gtk-launch 启动应用。
+            "url": "file://" + quote(path) if path else "",
             "lastUsed": last_used,
         })
     return {"ok": True, "items": items}
