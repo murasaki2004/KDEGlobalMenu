@@ -4,9 +4,14 @@
 //
 // 设计原则：能用 KDE 原生就绝不自造。动作全部按「原生优先、失败回落」编排：
 //   1) org.kde.plasma.private.sessions 的 SessionManagement —— Plasma 自己的
-//      会话管理器，会遵循系统设置里的「关机/注销是否需要确认」等策略；
-//   2) 回落：D-Bus 上的 org.kde.Shutdown / org.freedesktop.ScreenSaver /
-//      org.freedesktop.login1（关机走 Systemd 后端），或 xdg-open 打开 KCM。
+//      会话管理器。调用时不传确认模式参数（取 C++ 默认值
+//      ConfirmationMode::Default，与官方 Lock/Logout 部件一致），会遵循系统
+//      设置里的「确认注销」开关（ksmserverrc confirmLogout，默认开启）并弹出
+//      官方的倒计时确认框；
+//   2) 回落：D-Bus 上的 org.kde.LogoutPrompt（官方确认框所在服务，同样先弹框）、
+//      org.freedesktop.ScreenSaver / org.freedesktop.login1，或 xdg-open 打开 KCM。
+//      注意 org.kde.Shutdown 的 logout/logoutAndShutdown/logoutAndReboot 是
+//      免确认的立即执行变体，不可用作回落，否则会绕过确认直接执行。
 // 这样即使私有插件将来改名/缺失，功能也不会失效。
 //
 // 缩进与命名遵循工程既有风格。
@@ -181,20 +186,23 @@ QtObject {
     // ------------------------------------------------------------------ 重新启动
     function reboot() {
         if (session && typeof session.requestReboot === "function") {
-            // 0 = ConfirmationMode.Default：遵循系统设置里的"是否需要确认"策略
-            session.requestReboot(0);
+            // 不传参 = C++ 默认 ConfirmationMode::Default（官方 Lock/Logout 部件
+            // 的同款调用）：遵循 ksmserverrc 的 confirmLogout（默认 true），
+            // 由 Plasma 弹出带倒计时的确认框。
+            // 切勿传 0 —— 那是 ConfirmationMode::Skip（跳过确认、立即执行）。
+            session.requestReboot();
         } else {
-            logoutAndReboot();
+            promptReboot();
         }
     }
 
     // -------------------------------------------------------------------- 关机
     function shutdown() {
         if (session && typeof session.requestShutdown === "function") {
-            // 0 = ConfirmationMode.Default：遵循系统设置里的"是否需要确认"策略
-            session.requestShutdown(0);
+            // 同 reboot：不传参取默认 Default 模式，遵循系统确认策略
+            session.requestShutdown();
         } else {
-            logoutAndShutdown();
+            promptShutDown();
         }
     }
 
@@ -212,25 +220,28 @@ QtObject {
     // ---------------------------------------------------------------- 退出登录
     function logout() {
         if (session && typeof session.requestLogout === "function") {
-            // 走 Plasma 原生注销流程：会弹确认框并保存会话
-            // 0 = ConfirmationMode.Default：遵循系统设置里的"是否需要确认"策略
-            session.requestLogout(0);
+            // 同 reboot/shutdown：默认 Default 模式，弹确认框并保存会话
+            session.requestLogout();
         } else {
-            // org.kde.Shutdown 是 Plasma 6 的原生注销服务，同样会触发确认对话框
-            run("dbus-send --session --print-reply --dest=org.kde.Shutdown " +
-                "/Shutdown org.kde.Shutdown.logout");
+            promptLogout();
         }
     }
 
-    // 关掉 Plasma 自己之后再关机/重启：交给 org.kde.Shutdown 原生服务
-    function logoutAndReboot() {
-        run("dbus-send --session --print-reply --dest=org.kde.Shutdown " +
-            "/Shutdown org.kde.Shutdown.logoutAndReboot");
+    // 回落路径：org.kde.LogoutPrompt 就是 Plasma 官方确认对话框（含倒计时）所在的
+    // 服务，prompt* 会先弹框、用户确认后才真正执行，与主路径体验一致。
+    function promptLogout() {
+        run("dbus-send --session --print-reply --dest=org.kde.LogoutPrompt " +
+            "/LogoutPrompt org.kde.LogoutPrompt.promptLogout");
     }
 
-    function logoutAndShutdown() {
-        run("dbus-send --session --print-reply --dest=org.kde.Shutdown " +
-            "/Shutdown org.kde.Shutdown.logoutAndShutdown");
+    function promptReboot() {
+        run("dbus-send --session --print-reply --dest=org.kde.LogoutPrompt " +
+            "/LogoutPrompt org.kde.LogoutPrompt.promptReboot");
+    }
+
+    function promptShutDown() {
+        run("dbus-send --session --print-reply --dest=org.kde.LogoutPrompt " +
+            "/LogoutPrompt org.kde.LogoutPrompt.promptShutDown");
     }
 
     // --------------------------------------------------------------------- 工具
